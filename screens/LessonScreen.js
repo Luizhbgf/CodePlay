@@ -77,6 +77,13 @@ export default function LessonScreen({ navigation, route }) {
       correctAnswer: "b",
       hint: "É uma tag de uma única letra",
     },
+    {
+      id: "conclusao",
+      title: "Parabéns!",
+      content: "Você completou essa lição e ganhou 20XP!",
+      icon: "trophy",
+      isEnd: true,
+    }
   ]
 
   useEffect(() => {
@@ -120,8 +127,18 @@ export default function LessonScreen({ navigation, route }) {
   // Função para verificar resposta do quiz
   const checkAnswer = (optionId) => {
     const currentQuiz = lessonSteps[currentStep]
+  
     if (currentQuiz.correctAnswer === optionId) {
-      Alert.alert("Correto!", "Muito bem! Vamos continuar.", [{ text: "Próximo", onPress: nextStep }])
+      if (currentStep === lessonSteps.length - 1) {
+        Alert.alert("Quiz Concluído!", "Parabéns! Você finalizou essa lição e ganhou 20XP!", [
+          {
+            text: "Voltar para o início",
+            onPress: () => navigation.navigate("Home"),
+          },
+        ])
+      } else {
+        Alert.alert("Correto!", "Muito bem! Vamos continuar.", [{ text: "Próximo", onPress: nextStep }])
+      }
     } else {
       Alert.alert("Incorreto", "Tente novamente ou use uma dica.", [{ text: "OK" }])
     }

@@ -13,9 +13,12 @@ import {
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import BottomTabBar from "../components/BottomTabBar"
+import { useContext } from 'react'
+import { ThemeContext } from './ThemeContext'
 
 export default function LeaderboardScreen({ navigation }) {
   const [leaderboard, setLeaderboard] = useState([])
+  const { darkMode } = useContext(ThemeContext)
   const [loading, setLoading] = useState(true)
   const [timeFrame, setTimeFrame] = useState("week") // 'day', 'week', 'month', 'all'
   const [userPoints, setUserPoints] = useState(820) // Pontos do usuário atual
@@ -85,7 +88,10 @@ export default function LeaderboardScreen({ navigation }) {
         style={[
           styles.leaderboardItem,
           {
-            backgroundColor: item.isCurrentUser ? "#58CC0220" : "white",
+            backgroundColor: item.isCurrentUser
+              ? (darkMode ? "#58CC0230" : "#58CC0220")
+              : (darkMode ? "#2A2A2A" : "white"),
+            borderColor: darkMode ? "#444" : "#F0F0F0",
           },
         ]}
       >
@@ -97,22 +103,22 @@ export default function LeaderboardScreen({ navigation }) {
         <Image source={item.avatar} style={styles.avatar} />
 
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>
+          <Text style={[styles.userName, { color: darkMode ? '#fff' : '#333' }]}>
             {item.name}
             {item.isCurrentUser && <Text style={styles.currentUser}> (Você)</Text>}
           </Text>
         </View>
 
         <View style={styles.pointsContainer}>
-          <Text style={styles.pointsText}>{item.points}</Text>
-          <Text style={styles.pointsLabel}>XP</Text>
+          <Text style={[styles.pointsText, { color: darkMode ? '#fff' : '#333' }]}>{item.points}</Text>
+          <Text style={[styles.pointsLabel, { color: darkMode ? '#fff' : '#333' }]}>XP</Text>
         </View>
       </View>
     )
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: darkMode ? '#121212' : '#fff' }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Classificação</Text>
 
@@ -150,7 +156,7 @@ export default function LeaderboardScreen({ navigation }) {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#58CC02" />
-          <Text style={styles.loadingText}>Carregando classificação...</Text>
+          <Text style={[styles.loadingText, { color: darkMode ? '#fff' : '#333' }]}>Carregando classificação...</Text>
         </View>
       ) : (
         <FlatList

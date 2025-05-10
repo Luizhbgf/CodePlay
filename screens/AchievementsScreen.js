@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ThemeContext } from '../context/ThemeContext';
 import { AppContext } from '../context/AppContext';
 
+
 export default function AchievementsScreen() {
   const { theme } = useContext(ThemeContext);
   const { userPoints, completedLessons, streakDays } = useContext(AppContext);

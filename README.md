@@ -14,3 +14,7 @@ Para executar o aplicativo com todas essas melhorias, você precisará instalar 
 
 ```bash
 npm install @react-native-async-storage/async-storage @react-navigation/bottom-tabs expo-haptics expo-linear-gradient
+
+
+para colocar as imagens no profile:
+expo install expo-image-picker 

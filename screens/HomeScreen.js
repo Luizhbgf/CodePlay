@@ -1,15 +1,60 @@
 "use client"
 
-import { useState } from "react"
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView } from "react-native"
+import { useState, useRef, useEffect } from "react"
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Animated } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import BottomTabBar from "../components/BottomTabBar"
+import { useContext } from 'react'
+import { ThemeContext } from './ThemeContext'
 
 export default function HomeScreen({ navigation }) {
   const [streakDays, setStreakDays] = useState(5)
   const [xpPoints, setXpPoints] = useState(130)
+  const { darkMode, setDarkMode } = useContext(ThemeContext)
+  const animation = useRef(new Animated.Value(0)).current
 
-  // Dados dos módulos de aprendizado estilo Duolingo
+  const backgroundColor = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#fff", "#151515"],
+  })
+
+  const headerColor = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["#54B435", "#397E00"],
+  })
+
+  const getThemeStyles = (darkMode) => ({
+    welcomeText: {
+      color: darkMode ? '#FFF' : '#333',
+    },
+    subText: {
+      color: darkMode ? '#CCC' : '#666',
+    },
+    iconColor: darkMode ? '#151515' : 'white',
+    cardText: {
+      color: darkMode ? '#FFF' : '#333',
+    },
+    cardDesc: {
+      color: darkMode ? '#AAA' : '#666',
+    },
+    cardProgressText: {
+      color: darkMode ? '#999' : '#666',
+    },
+    moduleCardBg: darkMode ? '#1e1e1e' : null,
+    goalCardBg: darkMode ? '#333' : '#FFF9E5',
+    goalText: darkMode ? '#FFF' : '#333',
+  })
+
+  useEffect(() => {
+    Animated.timing(animation, {
+      toValue: darkMode ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start()
+  }, [darkMode])
+
+  const stylesTheme = getThemeStyles(darkMode)
+
   const modules = [
     {
       id: "html",
@@ -79,16 +124,13 @@ export default function HomeScreen({ navigation }) {
   ]
 
   const handleModulePress = (module) => {
-    if (module.locked) {
-      // Módulo bloqueado - poderia mostrar um alerta ou modal
-      return
-    }
+    if (module.locked) return
     navigation.navigate("CourseIntro", { module })
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <Animated.View style={[styles.container, { backgroundColor }]}>
+      <Animated.View style={[styles.header, { backgroundColor: headerColor }]}>
         <View style={styles.headerTop}>
           <View style={styles.streakContainer}>
             <Ionicons name="flame" size={24} color="#FF9500" />
@@ -100,11 +142,23 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.xpText}>{xpPoints} XP</Text>
           </View>
 
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <View style={styles.profileIcon}>
-              <Ionicons name="person" size={24} color="white" />
-            </View>
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <TouchableOpacity onPress={() => setDarkMode(!darkMode)}>
+              <View style={styles.settingsIcon}>
+                <Ionicons
+                  name={darkMode ? "moon" : "sunny"}
+                  size={24}
+                  color={stylesTheme.iconColor}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+              <View style={styles.profileIcon}>
+                <Ionicons name="person" size={24} color={stylesTheme.iconColor} />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.progressBarContainer}>
@@ -113,19 +167,19 @@ export default function HomeScreen({ navigation }) {
           </View>
           <Text style={styles.progressText}>{100 - (xpPoints % 100)} XP para o próximo nível</Text>
         </View>
-      </View>
+      </Animated.View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Olá, Programador!</Text>
-          <Text style={styles.welcomeSubtitle}>Vamos continuar aprendendo hoje?</Text>
+          <Text style={[styles.welcomeTitle, stylesTheme.welcomeText]}>Olá, Programador!</Text>
+          <Text style={[styles.welcomeSubtitle, stylesTheme.subText]}>Vamos continuar aprendendo hoje?</Text>
         </View>
 
         <View style={styles.modulesContainer}>
           {modules.map((module) => (
             <TouchableOpacity
               key={module.id}
-              style={[styles.moduleCard, { backgroundColor: module.backgroundColor }]}
+              style={[styles.moduleCard, { backgroundColor: stylesTheme.moduleCardBg || module.backgroundColor }]}
               onPress={() => handleModulePress(module)}
               disabled={module.locked}
             >
@@ -134,16 +188,13 @@ export default function HomeScreen({ navigation }) {
               </View>
 
               <View style={styles.moduleInfo}>
-                <Text style={styles.moduleTitle}>{module.title}</Text>
-                <Text style={styles.moduleDescription} numberOfLines={1}>
-                  {module.description}
-                </Text>
+                <Text style={[styles.moduleTitle, stylesTheme.cardText]}>{module.title}</Text>
+                <Text style={[styles.moduleDescription, stylesTheme.cardDesc]} numberOfLines={1}>{module.description}</Text>
 
                 <View style={styles.moduleProgressBar}>
                   <View style={[styles.moduleProgressFilled, { width: `${module.progress * 100}%` }]} />
                 </View>
-
-                <Text style={styles.moduleProgressText}>{Math.round(module.progress * 100)}% completo</Text>
+                <Text style={[styles.moduleProgressText, stylesTheme.cardProgressText]}>{Math.round(module.progress * 100)}% completo</Text>
               </View>
 
               {module.locked && (
@@ -156,15 +207,15 @@ export default function HomeScreen({ navigation }) {
         </View>
 
         <View style={styles.dailyGoalSection}>
-          <Text style={styles.dailyGoalTitle}>Meta Diária</Text>
-          <View style={styles.dailyGoalCard}>
+          <Text style={[styles.dailyGoalTitle, { color: stylesTheme.goalText }]}>Meta Diária</Text>
+          <View style={[styles.dailyGoalCard, { backgroundColor: stylesTheme.goalCardBg }]}>
             <Ionicons name="trophy" size={40} color="#FFCC00" />
             <View style={styles.dailyGoalInfo}>
-              <Text style={styles.dailyGoalText}>Ganhe 50 XP hoje</Text>
+              <Text style={[styles.dailyGoalText, { color: stylesTheme.goalText }]}>Ganhe 50 XP hoje</Text>
               <View style={styles.dailyGoalProgress}>
                 <View style={[styles.dailyGoalProgressFilled, { width: "60%" }]} />
               </View>
-              <Text style={styles.dailyGoalProgressText}>30/50 XP</Text>
+              <Text style={[styles.dailyGoalProgressText, stylesTheme.cardProgressText]}>30/50 XP</Text>
             </View>
           </View>
         </View>
@@ -173,7 +224,7 @@ export default function HomeScreen({ navigation }) {
       </ScrollView>
 
       <BottomTabBar navigation={navigation} activeScreen="Home" />
-    </SafeAreaView>
+    </Animated.View>
   )
 }
 
@@ -184,7 +235,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#58CC02",
-    paddingTop: 50,
+    paddingTop: 30,
     paddingBottom: 15,
     paddingHorizontal: 20,
   },
@@ -197,7 +248,7 @@ const styles = StyleSheet.create({
   streakContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: "rgba(255, 94, 0, 0.2)",
     paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -370,5 +421,19 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 80,
+  },
+  containerDark: {
+    backgroundColor: "#000",
+  },
+  headerDark: {
+    backgroundColor: "#397E00",
+  },
+  settingsIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 })

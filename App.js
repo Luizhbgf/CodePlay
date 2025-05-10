@@ -3,8 +3,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { StatusBar } from "expo-status-bar"
 import { View, Text, TouchableOpacity } from "react-native"
 
+
 // Importações diretas para evitar problemas com require
 import LoginScreen from "./screens/LoginScreen"
+import { ThemeProvider } from './screens/ThemeContext'
 
 // Importações condicionais para os outros componentes
 let HomeScreen, CourseIntroScreen, ProfileScreen, LessonScreen, QuizScreen, LeaderboardScreen, PracticeScreen
@@ -84,18 +86,20 @@ const Stack = createNativeStackNavigator()
 export default function App() {
   console.log("App renderizado")
   return (
-    <NavigationContainer>
-      <StatusBar style="auto" />
-      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="CourseIntro" component={CourseIntroScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Lesson" component={LessonScreen} />
-        <Stack.Screen name="Quiz" component={QuizScreen} />
-        <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-        <Stack.Screen name="Practice" component={PracticeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <StatusBar style="auto" />
+        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="CourseIntro" component={CourseIntroScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Lesson" component={LessonScreen} />
+          <Stack.Screen name="Quiz" component={QuizScreen} />
+          <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+          <Stack.Screen name="Practice" component={PracticeScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   )
 }
