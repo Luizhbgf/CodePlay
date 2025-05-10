@@ -24,8 +24,8 @@ Siga essas diretrizes para garantir que todos possamos colaborar de maneira orga
 Ou, se já for colaborador direto:
 
 ```bash
-git clone https://github.com/seu-usuario/trabalho.git
-cd trabalho
+git clone https://github.com/Luizhbgf/CodePlay
+cd trabalho(ou nome da pasta que quiser armazenar o projeto)
 ```
 
 ### 2. Crie uma nova branch:  
@@ -56,7 +56,7 @@ Faça commits claros e curtos:
 ```bash
 git add .
 git commit -m "Adiciona tela de Configurações"
-git push -u origin feat/nova-tela-configuracoes
+git push -u origin desenvolvimento
 ```
 
 ### 5. Crie um Pull Request (PR)  
