@@ -5,8 +5,8 @@ import { View, Text, TouchableOpacity } from "react-native"
 
 
 // Importações diretas para evitar problemas com require
-import LoginScreen from "./screens/LoginScreen"
-import { ThemeProvider } from './screens/ThemeContext'
+import LoginScreen from "./app/screens/LoginScreen"
+import { ThemeProvider } from './app/screens/ThemeContext'
 
 // Importações condicionais para os outros componentes
 let HomeScreen, CourseIntroScreen, ProfileScreen, LessonScreen, QuizScreen, LeaderboardScreen, PracticeScreen
@@ -33,49 +33,49 @@ const FallbackScreen = ({ navigation, route }) => (
 
 // Tentativa de importar os outros componentes
 try {
-  HomeScreen = require("./screens/HomeScreen").default || FallbackScreen
+  HomeScreen = require("./app/screens/HomeScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar HomeScreen:", error.message)
   HomeScreen = FallbackScreen
 }
 
 try {
-  CourseIntroScreen = require("./screens/CourseIntroScreen").default || FallbackScreen
+  CourseIntroScreen = require("./app/screens/CourseIntroScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar CourseIntroScreen:", error.message)
   CourseIntroScreen = FallbackScreen
 }
 
 try {
-  ProfileScreen = require("./screens/ProfileScreen").default || FallbackScreen
+  ProfileScreen = require("./app/screens/ProfileScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar ProfileScreen:", error.message)
   ProfileScreen = FallbackScreen
 }
 
 try {
-  LessonScreen = require("./screens/LessonScreen").default || FallbackScreen
+  LessonScreen = require("./app/screens/LessonScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar LessonScreen:", error.message)
   LessonScreen = FallbackScreen
 }
 
 try {
-  QuizScreen = require("./screens/QuizScreen").default || FallbackScreen
+  QuizScreen = require("./app/screens/QuizScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar QuizScreen:", error.message)
   QuizScreen = FallbackScreen
 }
 
 try {
-  LeaderboardScreen = require("./screens/LeaderboardScreen").default || FallbackScreen
+  LeaderboardScreen = require("./app/screens/LeaderboardScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar LeaderboardScreen:", error.message)
   LeaderboardScreen = FallbackScreen
 }
 
 try {
-  PracticeScreen = require("./screens/PracticeScreen").default || FallbackScreen
+  PracticeScreen = require("./app/screens/PracticeScreen").default || FallbackScreen
 } catch (error) {
   console.log("Erro ao importar PracticeScreen:", error.message)
   PracticeScreen = FallbackScreen
