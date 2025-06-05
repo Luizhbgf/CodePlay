@@ -1,7 +1,7 @@
-import { Platform } from "react-native"
+import { Platform } from "react-native";
 
-// Definir __DEV__ baseado no ambiente - Updated for SDK 53
-export const __DEV__ = typeof __DEV__ !== "undefined" ? __DEV__ : process.env.NODE_ENV === "development"
+// Define isDev sem tentar sobrescrever __DEV__
+export const isDev = (typeof __DEV__ !== "undefined" && __DEV__) || process.env.NODE_ENV === "development";
 
 // Outras constantes úteis para o projeto
 export const PLATFORM_CONFIG = {
@@ -46,7 +46,7 @@ export const DEEP_LINK_CONFIG = {
 }
 
 export default {
-  __DEV__,
+  isDev,
   PLATFORM_CONFIG,
   SUPABASE_CONFIG,
   REDIRECT_URLS,

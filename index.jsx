@@ -1,10 +1,10 @@
 import { registerRootComponent } from "expo"
 import App from "./App"
 import { Platform } from "react-native"
-import { __DEV__ } from "./constants" // Import __DEV__ from a constants file or declare it
+import { isDev } from "./constants" // Import __DEV__ from a constants file or declare it
 
 // Configuração para lidar com erros não capturados
-if (Platform.OS !== "web" && __DEV__) {
+if (Platform.OS !== "web" && isDev) {
   const originalConsoleError = console.error
   console.error = (...args) => {
     // Evitar que erros de ciclo de vida do React Native quebrem o app
@@ -71,12 +71,12 @@ if (Platform.OS !== "web") {
 // Configuração global para Supabase
 global.__SUPABASE_CONFIG__ = {
   platform: Platform.OS,
-  isDev: __DEV__,
+  isDev: isDev,
   timestamp: new Date().toISOString(),
 }
 
 // Log de inicialização
-console.log(`CodePlay iniciando em ${Platform.OS} - ${__DEV__ ? "Desenvolvimento" : "Produção"}`)
+console.log(`CodePlay iniciando em ${Platform.OS} - ${isDev ? "Desenvolvimento" : "Produção"}`)
 
 // Registra o componente raiz
 registerRootComponent(App)

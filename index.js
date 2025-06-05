@@ -1,10 +1,10 @@
 import { registerRootComponent } from "expo"
 import App from "./App"
 import { Platform } from "react-native"
-import { __DEV__ } from "./constants" // Import __DEV__ from a constants file or declare it
+import { isDev } from "./constants" // Import __DEV__ from a constants file or declare it
 
 // Configuração para lidar com erros não capturados
-if (Platform.OS !== "web" && __DEV__) {
+if (Platform.OS !== "web" && isDev) {
   const originalConsoleError = console.error
   console.error = (...args) => {
     // Evitar que erros de ciclo de vida do React Native quebrem o app

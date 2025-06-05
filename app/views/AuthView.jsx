@@ -15,7 +15,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
 import { supabase } from "../../lib/supabase"
-import { REDIRECT_URLS, __DEV__ } from "../../constants"
+import { REDIRECT_URLS, isDev } from "../../constants"
 import * as WebBrowser from "expo-web-browser"
 import * as QueryParams from "expo-auth-session/build/QueryParams"
 
@@ -31,7 +31,7 @@ const AuthView = () => {
   const [isSignUp, setIsSignUp] = useState(false)
 
   // Get the redirect URL based on environment
-  const redirectTo = __DEV__ ? REDIRECT_URLS.development : REDIRECT_URLS.production
+  const redirectTo = isDev ? REDIRECT_URLS.development : REDIRECT_URLS.production
 
   // Handle session from URL after OAuth or magic link authentication
   const createSessionFromUrl = async (url) => {
