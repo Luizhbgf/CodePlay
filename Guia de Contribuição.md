@@ -25,7 +25,7 @@ Ou, se já for colaborador direto:
 
 ```bash
 git clone https://github.com/Luizhbgf/CodePlay
-cd trabalho(ou nome da pasta que quiser armazenar o projeto)
+cd CodePlay(ou nome da pasta que quiser armazenar o projeto)
 ```
 
 ### 2. Crie uma nova branch:  
