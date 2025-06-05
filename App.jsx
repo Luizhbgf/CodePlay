@@ -1,105 +1,97 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { View, StyleSheet, ActivityIndicator } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { supabase } from "./lib/supabase"
+import "react-native-url-polyfill/auto"
+import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
-import { View, Text, TouchableOpacity } from "react-native"
 
+// Screens
+import SplashView from "./app/views/SplashView"
+import AuthView from "./app/views/AuthView"
+import MainNavigator from "./navigation/MainNavigator"
 
-// Importações diretas para evitar problemas com require
-import LoginScreen from "./app/screens/LoginScreen"
-import { ThemeProvider } from './app/screens/ThemeContext'
-
-// Importações condicionais para os outros componentes
-let HomeScreen, CourseIntroScreen, ProfileScreen, LessonScreen, QuizScreen, LeaderboardScreen, PracticeScreen
-
-// Componente de fallback para quando as telas não podem ser carregadas
-const FallbackScreen = ({ navigation, route }) => (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 20 }}>
-    <Text style={{ fontSize: 18, textAlign: "center", marginBottom: 20 }}>Erro ao carregar a tela: {route.name}</Text>
-    <Text style={{ fontSize: 16, color: "#666", textAlign: "center", marginBottom: 30 }}>
-      Verifique se o arquivo existe e está exportando corretamente o componente.
-    </Text>
-    <TouchableOpacity
-      style={{
-        backgroundColor: "#58CC02",
-        padding: 15,
-        borderRadius: 10,
-      }}
-      onPress={() => navigation.navigate("Login")}
-    >
-      <Text style={{ color: "white", fontWeight: "bold" }}>Voltar para Login</Text>
-    </TouchableOpacity>
-  </View>
-)
-
-// Tentativa de importar os outros componentes
-try {
-  HomeScreen = require("./app/screens/HomeScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar HomeScreen:", error.message)
-  HomeScreen = FallbackScreen
-}
-
-try {
-  CourseIntroScreen = require("./app/screens/CourseIntroScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar CourseIntroScreen:", error.message)
-  CourseIntroScreen = FallbackScreen
-}
-
-try {
-  ProfileScreen = require("./app/screens/ProfileScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar ProfileScreen:", error.message)
-  ProfileScreen = FallbackScreen
-}
-
-try {
-  LessonScreen = require("./app/screens/LessonScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar LessonScreen:", error.message)
-  LessonScreen = FallbackScreen
-}
-
-try {
-  QuizScreen = require("./app/screens/QuizScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar QuizScreen:", error.message)
-  QuizScreen = FallbackScreen
-}
-
-try {
-  LeaderboardScreen = require("./app/screens/LeaderboardScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar LeaderboardScreen:", error.message)
-  LeaderboardScreen = FallbackScreen
-}
-
-try {
-  PracticeScreen = require("./app/screens/PracticeScreen").default || FallbackScreen
-} catch (error) {
-  console.log("Erro ao importar PracticeScreen:", error.message)
-  PracticeScreen = FallbackScreen
-}
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync()
 
 const Stack = createNativeStackNavigator()
 
 export default function App() {
-  console.log("App renderizado")
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [appIsReady, setAppIsReady] = useState(false)
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Pre-load fonts, make API calls, etc.
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      } catch (e) {
+        console.warn(e)
+      } finally {
+        setAppIsReady(true)
+        await SplashScreen.hideAsync()
+      }
+    }
+
+    prepare()
+  }, [])
+
+  useEffect(() => {
+    // Set up the auth state listener
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      setLoading(false)
+    })
+
+    // Clean up the subscription
+    return () => subscription.unsubscribe()
+  }, [])
+
+  if (!appIsReady || loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <StatusBar style="light" backgroundColor="#4CAF50" />
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    )
+  }
+
   return (
-    <ThemeProvider>
+    <>
+      <StatusBar style="light" backgroundColor="#4CAF50" />
       <NavigationContainer>
-        <StatusBar style="auto" />
-        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="CourseIntro" component={CourseIntroScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Lesson" component={LessonScreen} />
-          <Stack.Screen name="Quiz" component={QuizScreen} />
-          <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-          <Stack.Screen name="Practice" component={PracticeScreen} />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {session && session.user ? (
+            <Stack.Screen name="Main" component={MainNavigator} initialParams={{ session }} />
+          ) : (
+            <>
+              <Stack.Screen name="Splash" component={SplashView} />
+              <Stack.Screen name="Auth" component={AuthView} />
+            </>
+          )}
         </Stack.Navigator>
       </NavigationContainer>
-    </ThemeProvider>
+    </>
   )
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+})
